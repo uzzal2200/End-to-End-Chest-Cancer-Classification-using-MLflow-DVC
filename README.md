@@ -1,10 +1,14 @@
 # 🫁 End-to-End Chest Cancer Classification using MLflow & DVC
 
+<div align="center">
+
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Docker](https://img.shields.io/badge/docker-enabled-brightgreen.svg)](https://www.docker.com/)
 [![MLflow](https://img.shields.io/badge/MLflow-tracking-blue.svg)](https://mlflow.org/)
 [![DVC](https://img.shields.io/badge/DVC-pipeline-orange.svg)](https://dvc.org/)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-success.svg)](https://github.com/features/actions)
+
+</div>
 
 An end-to-end deep learning project for classifying chest CT scan images to detect **Adenocarcinoma Cancer** using **VGG16** transfer learning. The project implements MLOps best practices with **MLflow** for experiment tracking and **DVC** for data versioning and pipeline orchestration, deployed using **AWS ECR**, **EC2**, and **GitHub Actions CI/CD**.
 
