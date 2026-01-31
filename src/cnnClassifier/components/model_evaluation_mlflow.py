@@ -3,6 +3,7 @@ from pathlib import Path
 import mlflow
 import mlflow.keras
 from urllib.parse import urlparse
+from cnnClassifier import logger
 from cnnClassifier.entity.config_entity import EvaluationConfig
 from cnnClassifier.utils.common import read_yaml, create_directories,save_json
 
@@ -54,21 +55,35 @@ class Evaluation:
 
     
     def log_into_mlflow(self):
+        # ensure both tracking server and registry are set to the configured URI
+        mlflow.set_tracking_uri(self.config.mlflow_uri)
         mlflow.set_registry_uri(self.config.mlflow_uri)
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
-        
-        with mlflow.start_run():
-            mlflow.log_params(self.config.all_params)
-            mlflow.log_metrics(
-                {"loss": self.score[0], "accuracy": self.score[1]}
-            )
-            # Model registry does not work with file store
-            if tracking_url_type_store != "file":
 
-                # Register the model
-                # There are other ways to use the Model Registry, which depends on the use case,
-                # please refer to the doc for more information:
-                # https://mlflow.org/docs/latest/model-registry.html#api-workflow
-                mlflow.keras.log_model(self.model, "model", registered_model_name="VGG16Model")
-            else:
+        # Try to create a remote run; if the tracking server rejects (e.g. 403),
+        # fall back to a local file store under ./mlruns so evaluation still records locally.
+        try:
+            with mlflow.start_run():
+                mlflow.log_params(self.config.all_params)
+                mlflow.set_tag("why", "why")
+                mlflow.log_metrics(
+                    {"loss": self.score[0], "accuracy": self.score[1]}
+                )
+                if tracking_url_type_store != "file":
+                    mlflow.keras.log_model(self.model, "model", registered_model_name="VGG16Model")
+                else:
+                    mlflow.keras.log_model(self.model, "model")
+
+        except mlflow.exceptions.MlflowException as e:
+            logger.warning(f"MLflow remote logging failed: {e}. Falling back to local 'mlruns'.")
+            local_mlrun_uri = (Path.cwd() / "mlruns").resolve().as_uri()
+            mlflow.set_tracking_uri(local_mlrun_uri)
+            mlflow.set_registry_uri(local_mlrun_uri)
+            with mlflow.start_run():
+                mlflow.log_params(self.config.all_params)
+                mlflow.set_tag("why", "why")
+                mlflow.log_metrics(
+                    {"loss": self.score[0], "accuracy": self.score[1]}
+                )
+                # local file store: register not supported, so save without registration
                 mlflow.keras.log_model(self.model, "model")

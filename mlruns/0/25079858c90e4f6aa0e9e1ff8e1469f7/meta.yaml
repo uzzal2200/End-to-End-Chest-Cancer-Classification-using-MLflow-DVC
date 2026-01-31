@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Research/DL%20and%20Computer%20Vision%20Project/End-to-End-Chest-Cancer-Classification-using-MLflow-DVC/mlruns/0/25079858c90e4f6aa0e9e1ff8e1469f7/artifacts
+end_time: 1769633971524
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 25079858c90e4f6aa0e9e1ff8e1469f7
+run_name: stately-shark-692
+run_uuid: 25079858c90e4f6aa0e9e1ff8e1469f7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1769633960902
+status: 3
+tags: []
+user_id: uzzal2200
